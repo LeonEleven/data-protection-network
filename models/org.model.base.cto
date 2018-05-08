@@ -1,0 +1,45 @@
+/**
+ * Write your model definitions here
+ */
+namespace org.model.base
+/**
+ * 类型
+ */
+enum Type {
+  o Science  // 科学
+  o Finance  //金融
+  o Humanities  //人文
+  o Compound  //综合
+}
+/**
+ * 联系方式
+ */
+concept ContactDetails {
+  o String email regex = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/ 
+  o String mobilePhone regex= /^1(3|4|5|7|8)\d{9}$/ 
+  o String homePhone optional
+  o Address address optional
+}
+/**
+ * 地址
+ */
+concept Address {
+  o String city optional
+  o String country optional
+  o String locality optional
+  o String region optional
+  o String street optional
+  o String street2 optional
+  o String street3 optional
+  o String postalCode optional
+  o String postOfficeBoxNumber optional
+}
+/**
+ * 抽象类：基本角色
+ */
+abstract participant BaseParticipant identified by id {
+  o String id regex = /^(Company|Person|Organization|University)-[0-9]{6}$/
+  o String name
+  o Type type
+  o ContactDetails contactDetails
+}

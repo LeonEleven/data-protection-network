@@ -1,0 +1,113 @@
+query selectIntroductionById {
+  description: "Select introduction by Id"
+  statement:
+      SELECT org.model.knowledge.Introduction
+      WHERE (introductionId == _$introductionId)
+}
+query selectIntroductionByTitle {
+  description: "Select introduction by title"
+  statement:
+      SELECT org.model.knowledge.Introduction
+      WHERE (title == _$title)
+}
+query selectIntroductionByType {
+  description: "Select introduction by type"
+  statement:
+      SELECT org.model.knowledge.Introduction
+      WHERE (type == _$type)
+}
+query selectKnowledgeById {
+  description: "Select knowledge by Id"
+  statement:
+      SELECT org.model.knowledge.Knowledge
+      WHERE (knowledgeId == _$knowledgeId)
+}
+query selectKnowledgeByTitle {
+  description: "Select knowledge by Title"
+  statement:
+      SELECT org.model.knowledge.Knowledge
+      WHERE (title == _$title)
+}
+query selectKnowledgeByType {
+  description: "Select knowledge by Type"
+  statement:
+      SELECT org.model.knowledge.Knowledge
+      WHERE (type  == _$type )
+}
+query selectOrderById {
+  description: "Select knowledge by Id"
+  statement:
+      SELECT org.model.knowledge.Order
+      WHERE (orderId  == _$orderId )
+}
+query selectOrderByState {
+  description: "Select knowledge by State"
+  statement:
+      SELECT org.model.knowledge.Order
+      WHERE (orderStatus  == _$orderStatus )
+}
+query selectParticipantById {
+  description: "Select Participant by Id"
+  statement:
+      SELECT org.model.base.BaseParticipant
+      WHERE (id  == _$id )
+}
+// query selectKnowledgeById {
+//   description: "Select all Knowledge based on Id"
+//   statement:
+//       SELECT org.acme.mynetwork.Knowledge
+//           WHERE (id ==_$id)
+// }
+
+// query selectKnowledgesByOwner {
+//   description: "Select all Knowledges based on their owner"
+//   statement:
+//       SELECT org.acme.mynetwork.Knowledge
+//           WHERE (owner == _$owner)
+// }
+
+// query selectKnowledgesByName {
+//   description: "Select Knowledges based on name"
+//   statement:
+//       SELECT org.acme.mynetwork.Knowledge
+//           WHERE (name == _$name)
+// }
+
+// query selectKnowledgesByType {
+//   description: "Select Knowledges based on type"
+//   statement:
+//       SELECT org.acme.mynetwork.Knowledge
+//           WHERE (type == _$type)
+// }
+
+
+
+// query selectBaseParticipants {
+//   description:"Select all Participants"
+//   statement: 
+//   SELECT org.acme.mynetwork.BaseParticipant
+// }
+// query selectBaseParticipantById {
+//   description:"Select Participant by id"
+//   statement: 
+//   SELECT org.acme.mynetwork.BaseParticipant
+//     WHERE (id ==_$id)
+// }
+// query selectBaseParticipantByName {
+//   description:"Select Participant by name"
+//   statement: 
+//   SELECT org.acme.mynetwork.BaseParticipant
+//     WHERE (name ==_$name)
+// }
+// query selectBaseCompaniesByType {
+//   description:"Select Companies by type"
+//   statement: 
+//   SELECT org.acme.mynetwork.Company
+//     WHERE (type ==_$type)
+// }
+// query selectBaseOrganizationsByType {
+//   description:"Select Organizations by type"
+//   statement: 
+//   SELECT org.acme.mynetwork.Organization
+//     WHERE (type ==_$type)
+// }

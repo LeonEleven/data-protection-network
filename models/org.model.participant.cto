@@ -1,0 +1,53 @@
+/**
+ * Write your model definitions here
+ */
+ 
+namespace org.model.participant
+import org.model.base.BaseParticipant
+import org.model.base.Type
+
+/**
+ * 性别
+ */
+enum Gender {
+ o MALE
+ o FEMALE
+ o OTHER
+}
+/**
+ * 生日
+ */
+concept BirthDetails {
+  o DateTime dateOfBirth optional
+  o String placeOfBirth optional
+}
+
+
+/**
+ × 参与者：公司 
+ */
+participant Company extends BaseParticipant {
+  o String InstitutionNumber
+
+}
+/**
+ × 参与者：科研组织 
+ */
+participant Organization extends BaseParticipant {
+  o String InstitutionNumber
+
+}
+/**
+ × 参与者：学校 
+ */
+participant University extends BaseParticipant {
+      o String InstitutionNumber
+}
+/**
+ × 参与者：个人 
+ */
+participant Person extends BaseParticipant {
+  o String IDNumber //身份证
+  o Gender gender optional
+  o BirthDetails birthDetails optional
+}

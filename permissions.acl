@@ -1,0 +1,187 @@
+/**
+ * 系统权限
+ */
+rule SystemACL {
+  description:  "System ACL to permit all access"
+  participant: "org.hyperledger.composer.system.Participant"
+  operation: ALL
+  resource: "org.hyperledger.composer.system.**"
+  action: ALLOW
+}
+rule NetworkAdminUser {
+    description: "Grant business network administrators full access to user resources"
+    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    operation: ALL
+    resource: "**"
+    action: ALLOW
+}
+rule NetworkAdminSystem {
+    description: "Grant business network administrators full access to system resources"
+    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    operation: ALL
+    resource: "org.hyperledger.composer.system.**"
+    action: ALLOW
+}
+rule ParticipantsCanCreateHistory {
+  description: "允许相关人员查看历史记录"
+  participant: "org.model.base.BaseParticipant"
+  operation: CREATE
+  resource: "org.hyperledger.composer.system.HistorianRecord"
+  action: ALLOW
+}
+rule ParticipantsSeeOwnHistory {
+  description: "允许相关人员查看历史记录"
+  participant(p): "org.model.base.BaseParticipant"
+  operation: READ
+  resource(r): "org.hyperledger.composer.system.HistorianRecord"
+  condition: (r.participantInvoking.getIdentifier() === p.getIdentifier())
+  action: ALLOW
+}
+
+
+
+
+/**
+ * 业务权限
+ */
+ 
+rule EverybodyCanReadAndCreateIntroduction {
+    description: "允许所有用户创建浏览简介"
+    participant: "org.model.base.BaseParticipant"
+    operation: READ,CREATE
+    resource: "org.model.knowledge.Introduction"
+    action: ALLOW
+}
+rule EverybodyCanReadAndUpdateParticipant {
+    description: "自己只能查看自己的帐号"
+    participant(p): "org.model.base.BaseParticipant"
+    operation: READ,UPDATE
+    resource(r): "org.model.base.BaseParticipant"
+    condition: (p.getIdentifier() === r.getIdentifier())
+    action: ALLOW
+}
+rule OwnerCanUpdateHisIntroduction {
+    description: "允许自己更新自己的简介"
+    participant(p): "org.model.base.BaseParticipant"
+    operation: UPDATE,DELETE
+    resource(r): "org.model.knowledge.Introduction"
+    condition: (r.knowledge.owner.getIdentifier() === p.getIdentifier())
+    action: ALLOW
+}
+
+
+
+rule EverybodyCanCreateKnowledge {
+    description: "允许所有用户创建知识"
+    participant: "org.model.base.BaseParticipant"
+    operation: CREATE
+    resource: "org.model.knowledge.Knowledge"
+    action: ALLOW
+}
+rule OwnerCanUpdateHisKnowledge {
+    description: "只允许自己更新自己的知识"
+    participant(p): "org.model.base.BaseParticipant"
+    operation: UPDATE,DELETE
+    resource(r): "org.model.knowledge.Knowledge"
+    condition: (r.owner.getIdentifier() === p.getIdentifier())
+    action: ALLOW
+}
+rule OwnerCanReadHisKnowledge_ApplicantCanReadKnowledgeWhenAccept {
+    description: "知识拥有者和交易成功的申请者可以浏览知识"
+    participant(p): "org.model.base.BaseParticipant"
+    operation: READ
+    resource(r): "org.model.knowledge.Knowledge"
+    condition: ((r.owner.getIdentifier() === p.getIdentifier())||(r.usersId.indexOf(p.id) !== -1))
+    action: ALLOW
+}
+
+
+
+rule EverybodyCanSubmitApplyOrderTransaction {
+    description: "允许所有用户提交申请订单交易"
+    participant: "org.model.base.BaseParticipant"
+    operation: CREATE
+    resource: "org.model.knowledge.ApplyOrder"
+    action: ALLOW
+}
+rule OwnerCanReadApplyOrderTransaction {
+    description: "允许知识拥有者浏览申请订单交易"
+    participant(p): "org.model.base.BaseParticipant"
+    operation: READ
+    resource(r): "org.model.knowledge.ApplyOrder"
+    condition: (p.getIdentifier() === r.introduction.knowledge.owner.getIdentifier())
+    action: ALLOW
+}
+rule OwnerCanSubmitProcessingUseApplyTransaction {
+    description: "知识拥有者能创建订单状态交易"
+    participant(p): "org.model.base.BaseParticipant"
+    operation: CREATE
+    resource(r): "org.model.knowledge.ProcessingUseApply"
+    condition: (p.getIdentifier() === r.order.introduction.knowledge.owner.getIdentifier())
+    action: ALLOW
+}
+rule OwnerAndApplicantCanReadProcessingUseApplyTransaction {
+    description: "允许知识拥有者和申请者浏览订单状态交易"
+    participant(p): "org.model.base.BaseParticipant"
+    operation: READ
+    resource(r): "org.model.knowledge.ProcessingUseApply"
+    condition: ((p.getIdentifier() === r.order.introduction.knowledge.owner.getIdentifier())||(p.getIdentifier() === r.order.applicant.getIdentifier()))
+    action: ALLOW
+}
+rule OwnerCanSubmitProcessingOwnerApplyTransaction {
+    description: "允许知识拥有者创建改变知识拥有者的交易"
+    participant(p): "org.model.base.BaseParticipant"
+    operation: CREATE
+    resource(r): "org.model.knowledge.ProcessingOwnerApply"
+    condition: (p.getIdentifier() === r.order.introduction.knowledge.owner.getIdentifier())
+    action: ALLOW
+}
+rule oldOwnerAndNewOwnerCanReadProcessingOwnerApplyTransaction {
+    description: "允许新旧知识拥有者浏览改变知识拥有者的交易"
+    participant(p): "org.model.base.BaseParticipant"
+    operation: READ
+    resource(r): "org.model.knowledge.ProcessingOwnerApply"
+    condition: ((p.getIdentifier() === r.order.introduction.knowledge.owner.getIdentifier())||(p.getIdentifier() === p.order.applicant.getIdentifier()))
+    action: ALLOW
+}
+rule OwnerCanSubmitProcessingDeleteUserTransaction {
+    description: "允许知识拥有者创建删除使用者的交易"
+    participant(p): "org.model.base.BaseParticipant"
+    operation: CREATE
+    resource(r): "org.model.knowledge.ProcessingDeleteUser"
+    condition: (p.getIdentifier() === r.knowledge.owner.getIdentifier())
+    action: ALLOW
+}
+rule OwnerCanReadProcessingDeleteUserTransaction {
+    description: "允许知识拥有者浏览删除使用者的交易"
+    participant(p): "org.model.base.BaseParticipant"
+    operation: READ
+    resource(r): "org.model.knowledge.ProcessingDeleteUser"
+    condition: (p.getIdentifier() === r.knowledge.owner.getIdentifier())
+    action: ALLOW
+}
+
+
+rule EverybodyCanCreateOrder {
+    description: "允许所有人创建订单"
+    participant: "org.model.base.BaseParticipant"
+    operation: CREATE
+    resource: "org.model.knowledge.Order"
+    action: ALLOW
+}
+rule KnowledgeOwnerCanUpdateOrder {
+    description: "知识拥有者能更新订单"
+    participant(p): "org.model.base.BaseParticipant"
+    operation: UPDATE
+    resource(r): "org.model.knowledge.Order"
+    condition: (p.getIdentifier() === r.introduction.knowledge.owner.getIdentifier())
+    action: ALLOW
+}
+rule OwnerAndApplicantCanReadOrder {
+    description: "知识拥有者和申请者能浏览订单"
+    participant(p): "org.model.base.BaseParticipant"
+    operation: READ
+    resource(r): "org.model.knowledge.Order"
+    condition: ((p.getIdentifier() === r.applicant.getIdentifier())||(p.getIdentifier() === r.introduction.knowledge.owner.getIdentifier()))
+    action: ALLOW
+}

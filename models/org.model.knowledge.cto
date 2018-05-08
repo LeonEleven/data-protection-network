@@ -1,0 +1,117 @@
+/**
+ * Write your model definitions here
+ */
+
+namespace org.model.knowledge
+import org.model.base.BaseParticipant
+import org.model.base.Type
+/**
+ * 订单状态
+ */
+enum OrderStatus {
+  o USE_APPLY  //使用权提出申请
+  o OWNER_APPLY //所有权申请
+  o REJECT  //回绝
+  o ACCEPT  //成功
+}
+/**
+ * 协议模板
+ */
+concept ProtocolDetails {
+  o String rule  //具体协议
+  o Double payment  //需支付总金额
+  o DateTime startTime optional  //使用开始日期 
+  o DateTime deadline optional //使用截至日期
+}
+
+/**
+× 知识简介：供外部浏览使用 
+*/
+asset Introduction identified by introductionId {
+  o String introductionId regex = /^(Introduction)-[0-9]{6}$/
+  o String title
+  o String content  //简介
+  o Type type  //类型
+  o ProtocolDetails protocol
+  --> Knowledge knowledge
+}
+
+/**
+* 知识 
+*/
+asset Knowledge identified by knowledgeId {
+  o String knowledgeId regex = /^(Knowledge)-[0-9]{6}$/
+  o String title
+  o Type type  //类型
+  o String content
+  --> BaseParticipant owner
+  o String[] usersId
+}
+
+/**
+* 订单 
+*/
+asset Order identified by orderId {
+  o String orderId regex = /^(Order)-[0-9]{6}$/
+  o OrderStatus orderStatus
+  o ProtocolDetails newProtocol optional  //申请人可以添加新的协议
+  o String result optional
+  --> Introduction introduction
+  --> BaseParticipant applicant
+}
+
+/**
+  交易： 提交申请
+*/
+transaction ApplyOrder {
+  o String orderId
+  o OrderStatus orderStatus
+  o ProtocolDetails protocol optional
+  --> Introduction introduction
+  --> BaseParticipant applicant
+}
+event ApplyOrderEvent {
+  o String orderId
+  o OrderStatus orderStatus
+  o String massage
+}
+
+/**
+  交易：更新订单 
+*/
+transaction ProcessingUseApply {
+  o OrderStatus orderStatus
+  o String result optional
+  --> Order order
+}
+event ProcessingUseApplyEvent {
+  o OrderStatus orderStatus
+  o String massage optional
+  --> Order order
+}
+
+/**
+  交易：更换知识拥有者
+ */
+transaction ProcessingOwnerApply {
+  o OrderStatus orderStatus
+  o String result optional
+  --> Order order
+}
+event ProcessingOwnerApplyEvent {
+  o OrderStatus orderStatus
+  o String massage optional
+  --> Order order
+}
+
+/**
+  交易:删除使用者
+ */
+transaction ProcessingDeleteUser {
+  o String userId
+  --> Knowledge knowledge
+}
+event ProcessingDeleteUserEvent{
+  o String message
+  --> Knowledge knowledge
+}
