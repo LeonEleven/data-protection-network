@@ -3,7 +3,7 @@
     "composer": "^0.19.4"
   },
   "name": "data-protection-network",
-  "version": "0.0.2",
+  "version": "0.0.1",
   "description": "This application is dedicated to the release and transaction of data and uses the characteristics of the blockchain to protect the ownership of data.",
   "scripts": {
     "prepublish": "mkdirp ./dist && composer archive create --sourceType dir --sourceName . -a ./dist/data-protection-network.bna",
