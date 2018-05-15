@@ -8,10 +8,15 @@ import org.model.base.*
  * 订单状态
  */
 enum OrderStatus {
-  o USE_APPLY  //使用权提出申请
+  o USE_APPLY  //使用权申请
+  // o USER_APPLY_AUTO //使用权申请，自动审理
   o OWNER_APPLY //所有权申请
   o REJECT  //回绝
   o ACCEPT  //成功
+}
+enum ContentType {
+  o NOUMENON
+  o LINK
 }
 /**
  * 协议模板
@@ -21,6 +26,13 @@ concept ProtocolDetails {
   o Double payment  //需支付总金额
   o DateTime startTime optional  //使用开始日期 
   o DateTime deadline optional //使用截至日期
+}
+/**
+ * 知识模板
+ */
+concept KnowledgeDetails {
+  o ContentType contentType  //内容类型
+  o String content
 }
 
 /**
@@ -41,8 +53,8 @@ asset Introduction identified by introductionId {
 asset Knowledge identified by knowledgeId {
   o String knowledgeId regex = /^(Knowledge)-[0-9]{6}$/
   o String title
+  o KnowledgeDetails knowledgeDetails
   o Type type  //类型
-  o String content
   --> BaseParticipant owner
   o String[] usersId
 }
@@ -74,6 +86,21 @@ event ApplyOrderEvent {
   o OrderStatus orderStatus
   o String massage
 }
+
+// /**
+//   交易： 自动提交申请
+// */
+// transaction AutoApplyOrder {
+//   o String orderId
+//   o OrderStatus orderStatus default = 'USER_APPLY_AUTO'
+//   --> Introduction introduction
+//   --> BaseParticipant applicant
+// }
+// event AutoApplyOrderEvent {
+//   o String orderId
+//   o OrderStatus orderStatus
+//   o String massage
+// }
 
 /**
   交易：更新订单 

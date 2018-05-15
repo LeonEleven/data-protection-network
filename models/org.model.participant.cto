@@ -27,14 +27,12 @@ concept BirthDetails {
  */
 participant Company extends BaseParticipant {
   o String InstitutionNumber
-
 }
 /**
  × 参与者：科研组织 
  */
 participant Organization extends BaseParticipant {
   o String InstitutionNumber
-
 }
 /**
  × 参与者：学校 

@@ -22,21 +22,7 @@ rule NetworkAdminSystem {
     resource: "org.hyperledger.composer.system.**"
     action: ALLOW
 }
-rule ParticipantsCanCreateHistory {
-  description: "允许相关人员查看历史记录"
-  participant: "org.model.base.BaseParticipant"
-  operation: CREATE
-  resource: "org.hyperledger.composer.system.HistorianRecord"
-  action: ALLOW
-}
-rule ParticipantsSeeOwnHistory {
-  description: "允许相关人员查看历史记录"
-  participant(p): "org.model.base.BaseParticipant"
-  operation: READ
-  resource(r): "org.hyperledger.composer.system.HistorianRecord"
-  condition: (r.participantInvoking.getIdentifier() === p.getIdentifier())
-  action: ALLOW
-}
+
 
 
 
@@ -44,20 +30,19 @@ rule ParticipantsSeeOwnHistory {
 /**
  * 业务权限
  */
- 
+ rule ParticipantsSeeOwnHistory {
+  description: "允许相关人员查看历史记录"
+  participant(p): "org.model.base.BaseParticipant"
+  operation: READ
+  resource(r): "org.hyperledger.composer.system.HistorianRecord"
+  condition: (r.participantInvoking.getIdentifier() === p.getIdentifier())
+  action: ALLOW
+}
 rule EverybodyCanReadAndCreateIntroduction {
     description: "允许所有用户创建浏览简介"
     participant: "org.model.base.BaseParticipant"
     operation: READ,CREATE
     resource: "org.model.knowledge.Introduction"
-    action: ALLOW
-}
-rule EverybodyCanReadAndUpdateParticipant {
-    description: "自己只能查看自己的帐号"
-    participant(p): "org.model.base.BaseParticipant"
-    operation: READ,UPDATE
-    resource(r): "org.model.base.BaseParticipant"
-    condition: (p.getIdentifier() === r.getIdentifier())
     action: ALLOW
 }
 rule OwnerCanUpdateHisIntroduction {
@@ -104,14 +89,37 @@ rule EverybodyCanSubmitApplyOrderTransaction {
     resource: "org.model.knowledge.ApplyOrder"
     action: ALLOW
 }
-rule OwnerCanReadApplyOrderTransaction {
-    description: "允许知识拥有者浏览申请订单交易"
+rule OwnerAndApplicantCanReadApplyOrderTransaction {
+    description: "允许知识拥有者和申请者浏览申请订单交易"
     participant(p): "org.model.base.BaseParticipant"
     operation: READ
     resource(r): "org.model.knowledge.ApplyOrder"
-    condition: (p.getIdentifier() === r.introduction.knowledge.owner.getIdentifier())
+    condition: (p.getIdentifier() === r.applicant.getIdentifier()||p.getIdentifier() === r.introduction.knowledge.owner.getIdentifier())
     action: ALLOW
 }
+// rule ApplicantCanReadApplyOrderTransaction {
+//     description: "允许知识申请者浏览申请订单交易"
+//     participant(p): "org.model.base.BaseParticipant"
+//     operation: READ
+//     resource(r): "org.model.knowledge.ApplyOrder"
+//     condition: (p.getIdentifier() === r.applicant.getIdentifier())
+//     action: ALLOW
+// }
+// rule EverybodyCanSubmitAutoApplyOrderTransaction {
+//     description: "允许所有用户提交自动申请订单交易"
+//     participant: "org.model.base.BaseParticipant"
+//     operation: CREATE
+//     resource: "org.model.knowledge.AutoApplyOrder"
+//     action: ALLOW
+// }
+// rule OwnerAndApplicantCanReadAutoApplyOrderTransaction {
+//     description: "允许知识拥有者浏览申请订单交易"
+//     participant(p): "org.model.base.BaseParticipant"
+//     operation: READ
+//     resource(r): "org.model.knowledge.AutoApplyOrder"
+//     condition: ((p.getIdentifier() === r.introduction.knowledge.owner.getIdentifier())||(p.getIdentifier() === r.applicant.getIdentifier()))
+//     action: ALLOW
+// }
 rule OwnerCanSubmitProcessingUseApplyTransaction {
     description: "知识拥有者能创建订单状态交易"
     participant(p): "org.model.base.BaseParticipant"
@@ -183,5 +191,14 @@ rule OwnerAndApplicantCanReadOrder {
     operation: READ
     resource(r): "org.model.knowledge.Order"
     condition: ((p.getIdentifier() === r.applicant.getIdentifier())||(p.getIdentifier() === r.introduction.knowledge.owner.getIdentifier()))
+    action: ALLOW
+}
+
+rule OwnerCanReadAndUpdateParticipant {
+    description: "自己只能查看自己的帐号"
+    participant(p): "org.model.base.BaseParticipant"
+    operation: READ,UPDATE
+    resource(r): "org.model.base.BaseParticipant"
+    condition: (p.getIdentifier() === r.getIdentifier())
     action: ALLOW
 }
