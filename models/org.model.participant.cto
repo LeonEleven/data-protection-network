@@ -18,7 +18,7 @@ enum Gender {
  */
 concept BirthDetails {
   o DateTime dateOfBirth optional
-  o String placeOfBirth optional
+  o String placeOfBirth optional  // 出生地
 }
 
 

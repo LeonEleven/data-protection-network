@@ -2,11 +2,11 @@
  * 系统权限
  */
 rule SystemACL {
-  description:  "System ACL to permit all access"
-  participant: "org.hyperledger.composer.system.Participant"
-  operation: ALL
-  resource: "org.hyperledger.composer.system.**"
-  action: ALLOW
+    description:  "System ACL to permit all access"
+    participant: "org.hyperledger.composer.system.Participant"
+    operation: ALL
+    resource: "org.hyperledger.composer.system.**"
+    action: ALLOW
 }
 rule NetworkAdminUser {
     description: "Grant business network administrators full access to user resources"
@@ -22,21 +22,16 @@ rule NetworkAdminSystem {
     resource: "org.hyperledger.composer.system.**"
     action: ALLOW
 }
-
-
-
-
-
 /**
  * 业务权限
  */
- rule ParticipantsSeeOwnHistory {
-  description: "允许相关人员查看历史记录"
-  participant(p): "org.model.base.BaseParticipant"
-  operation: READ
-  resource(r): "org.hyperledger.composer.system.HistorianRecord"
-  condition: (r.participantInvoking.getIdentifier() === p.getIdentifier())
-  action: ALLOW
+ rule historianAccess{
+    description: "允许相关人员查看历史记录"
+    participant(p): "org.model.base.BaseParticipant"
+    operation: READ
+    resource(r): "org.hyperledger.composer.system.HistorianRecord"
+    condition: (r.participantInvoking.getFullyQualifiedIdentifier() == p.getFullyQualifiedIdentifier())
+    action: ALLOW
 }
 rule EverybodyCanReadAndCreateIntroduction {
     description: "允许所有用户创建浏览简介"
@@ -68,7 +63,7 @@ rule OwnerCanUpdateHisKnowledge {
     participant(p): "org.model.base.BaseParticipant"
     operation: UPDATE,DELETE
     resource(r): "org.model.knowledge.Knowledge"
-    condition: (r.owner.getIdentifier() === p.getIdentifier())
+    condition: (r.owner.getIdentifier() == p.getIdentifier())
     action: ALLOW
 }
 rule OwnerCanReadHisKnowledge_ApplicantCanReadKnowledgeWhenAccept {
@@ -76,7 +71,7 @@ rule OwnerCanReadHisKnowledge_ApplicantCanReadKnowledgeWhenAccept {
     participant(p): "org.model.base.BaseParticipant"
     operation: READ
     resource(r): "org.model.knowledge.Knowledge"
-    condition: ((r.owner.getIdentifier() === p.getIdentifier())||(r.usersId.indexOf(p.id) !== -1))
+    condition: ((r.owner.getIdentifier() == p.getIdentifier())||(r.usersId.indexOf(p.id) != -1))
     action: ALLOW
 }
 
@@ -94,17 +89,9 @@ rule OwnerAndApplicantCanReadApplyOrderTransaction {
     participant(p): "org.model.base.BaseParticipant"
     operation: READ
     resource(r): "org.model.knowledge.ApplyOrder"
-    condition: (p.getIdentifier() === r.applicant.getIdentifier()||p.getIdentifier() === r.introduction.knowledge.owner.getIdentifier())
+    condition: (p.getIdentifier() == r.applicant.getIdentifier()||p.getIdentifier() == r.introduction.knowledge.owner.getIdentifier())
     action: ALLOW
 }
-// rule ApplicantCanReadApplyOrderTransaction {
-//     description: "允许知识申请者浏览申请订单交易"
-//     participant(p): "org.model.base.BaseParticipant"
-//     operation: READ
-//     resource(r): "org.model.knowledge.ApplyOrder"
-//     condition: (p.getIdentifier() === r.applicant.getIdentifier())
-//     action: ALLOW
-// }
 // rule EverybodyCanSubmitAutoApplyOrderTransaction {
 //     description: "允许所有用户提交自动申请订单交易"
 //     participant: "org.model.base.BaseParticipant"
@@ -125,7 +112,7 @@ rule OwnerCanSubmitProcessingUseApplyTransaction {
     participant(p): "org.model.base.BaseParticipant"
     operation: CREATE
     resource(r): "org.model.knowledge.ProcessingUseApply"
-    condition: (p.getIdentifier() === r.order.introduction.knowledge.owner.getIdentifier())
+    condition: (p.getIdentifier() == r.order.introduction.knowledge.owner.getIdentifier())
     action: ALLOW
 }
 rule OwnerAndApplicantCanReadProcessingUseApplyTransaction {
@@ -133,7 +120,7 @@ rule OwnerAndApplicantCanReadProcessingUseApplyTransaction {
     participant(p): "org.model.base.BaseParticipant"
     operation: READ
     resource(r): "org.model.knowledge.ProcessingUseApply"
-    condition: ((p.getIdentifier() === r.order.introduction.knowledge.owner.getIdentifier())||(p.getIdentifier() === r.order.applicant.getIdentifier()))
+    condition: ((p.getIdentifier() == r.order.introduction.knowledge.owner.getIdentifier())||(p.getIdentifier() == r.order.applicant.getIdentifier()))
     action: ALLOW
 }
 rule OwnerCanSubmitProcessingOwnerApplyTransaction {
@@ -141,7 +128,7 @@ rule OwnerCanSubmitProcessingOwnerApplyTransaction {
     participant(p): "org.model.base.BaseParticipant"
     operation: CREATE
     resource(r): "org.model.knowledge.ProcessingOwnerApply"
-    condition: (p.getIdentifier() === r.order.introduction.knowledge.owner.getIdentifier())
+    condition: (p.getIdentifier() == r.order.introduction.knowledge.owner.getIdentifier())
     action: ALLOW
 }
 rule oldOwnerAndNewOwnerCanReadProcessingOwnerApplyTransaction {
@@ -149,7 +136,7 @@ rule oldOwnerAndNewOwnerCanReadProcessingOwnerApplyTransaction {
     participant(p): "org.model.base.BaseParticipant"
     operation: READ
     resource(r): "org.model.knowledge.ProcessingOwnerApply"
-    condition: ((p.getIdentifier() === r.order.introduction.knowledge.owner.getIdentifier())||(p.getIdentifier() === p.order.applicant.getIdentifier()))
+    condition: ((p.getIdentifier() == r.order.introduction.knowledge.owner.getIdentifier())||(p.getIdentifier() == p.order.applicant.getIdentifier()))
     action: ALLOW
 }
 rule OwnerCanSubmitProcessingDeleteUserTransaction {
@@ -157,7 +144,7 @@ rule OwnerCanSubmitProcessingDeleteUserTransaction {
     participant(p): "org.model.base.BaseParticipant"
     operation: CREATE
     resource(r): "org.model.knowledge.ProcessingDeleteUser"
-    condition: (p.getIdentifier() === r.knowledge.owner.getIdentifier())
+    condition: (p.getIdentifier() == r.knowledge.owner.getIdentifier())
     action: ALLOW
 }
 rule OwnerCanReadProcessingDeleteUserTransaction {
@@ -165,7 +152,7 @@ rule OwnerCanReadProcessingDeleteUserTransaction {
     participant(p): "org.model.base.BaseParticipant"
     operation: READ
     resource(r): "org.model.knowledge.ProcessingDeleteUser"
-    condition: (p.getIdentifier() === r.knowledge.owner.getIdentifier())
+    condition: (p.getIdentifier() == r.knowledge.owner.getIdentifier())
     action: ALLOW
 }
 
@@ -182,7 +169,7 @@ rule KnowledgeOwnerCanUpdateOrder {
     participant(p): "org.model.base.BaseParticipant"
     operation: UPDATE
     resource(r): "org.model.knowledge.Order"
-    condition: (p.getIdentifier() === r.introduction.knowledge.owner.getIdentifier())
+    condition: (p.getIdentifier() == r.introduction.knowledge.owner.getIdentifier())
     action: ALLOW
 }
 rule OwnerAndApplicantCanReadOrder {
@@ -190,7 +177,7 @@ rule OwnerAndApplicantCanReadOrder {
     participant(p): "org.model.base.BaseParticipant"
     operation: READ
     resource(r): "org.model.knowledge.Order"
-    condition: ((p.getIdentifier() === r.applicant.getIdentifier())||(p.getIdentifier() === r.introduction.knowledge.owner.getIdentifier()))
+    condition: ((p.getIdentifier() == r.applicant.getIdentifier())||(p.getIdentifier() == r.introduction.knowledge.owner.getIdentifier()))
     action: ALLOW
 }
 
@@ -199,6 +186,6 @@ rule OwnerCanReadAndUpdateParticipant {
     participant(p): "org.model.base.BaseParticipant"
     operation: READ,UPDATE
     resource(r): "org.model.base.BaseParticipant"
-    condition: (p.getIdentifier() === r.getIdentifier())
+    condition: (p.getIdentifier() == r.getIdentifier())
     action: ALLOW
 }
